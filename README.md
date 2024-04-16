@@ -16,13 +16,13 @@ API para consumo y aplicacion de logica funcional para E-commerce Global Market 
 ```
 pnpm install
 ```
+2. Clonar el archivo __.env.template__ y renombrarlo por __.env__ 
+3. Cambiar las variables de entorno.
 
-2. Levantar la base de datos
+4. Levantar la base de datos
 ```
 docker-compose up -d
 ```
-
-
 
 ## Correr la aplicacion
 
