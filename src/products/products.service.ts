@@ -19,18 +19,20 @@ export class ProductsService {
 
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    try {
+  async create(createProductDto: CreateProductDto)  {
 
-      const Product = this.productRepository.create( createProductDto )
+    return 'This action adds a new product'
+    // try {
 
-      await this.productRepository.save( Product )
+    //   const Product = this.productRepository.create( createProductDto )
 
-      return Product
+    //   await this.productRepository.save( Product )
 
-    } catch (error) {
-      this.handleExceptions( error )
-    }
+    //   return Product
+
+    // } catch (error) {
+    //   this.handleExceptions( error )
+    // }
   }
 
   async findAll( paginationDto: PaginationDto ) {
@@ -70,20 +72,22 @@ export class ProductsService {
 
   async update( id: string, updateProductDto: UpdateProductDto ) {
 
-    const product = await this.productRepository.preload({
-      id: id,
-      ...updateProductDto
-    })
+    return 'This action updates a #${id} product'
 
-    if ( !product ) throw new NotFoundException( 'Product not found' )
+    // const product = await this.productRepository.preload({
+    //   id: id,
+    //   ...updateProductDto
+    // })
 
-    try {
+    // if ( !product ) throw new NotFoundException( 'Product not found' )
 
-      await this.productRepository.save( product )
-      return product
-    } catch (error) {
-      this.handleExceptions( error )
-    }
+    // try {
+
+    //   await this.productRepository.save( product )
+    //   return product
+    // } catch (error) {
+    //   this.handleExceptions( error )
+    // }
 
   }
 

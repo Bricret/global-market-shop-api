@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ProductImage, ProductSize } from "./index";
 
 
 @Entity()
@@ -32,17 +33,20 @@ export class Product {
     })
     stock: number;
 
-    @Column( 'text' )
-    gender: string
-    
-    @Column('text', { 
-        array: true
-    })
-    sizes: string[]
-    //tags
+    @ManyToMany(
+        () => ProductSize,
+        (productSize) => productSize.product,
+        { cascade: true }
+    )
+    @JoinTable()
+    sizes?: ProductSize
 
-    //images
-
+    @OneToMany(
+        () => ProductImage,
+        (productImage) => productImage.product,
+        { cascade: true }
+    )
+    images?: ProductImage
 
     @BeforeInsert()
     checkSlugInsert() {
