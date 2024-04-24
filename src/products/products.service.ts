@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { validate as isUUID } from 'uuid';
 
 import { CreateProductDto, UpdateProductDto } from './dto';
-import { Product } from './entities/product.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { ProductImage, Product, ProductSize } from './entities';
 
 @Injectable()
 export class ProductsService {
@@ -15,34 +15,68 @@ export class ProductsService {
   constructor(
 
     @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>
+    private readonly productRepository: Repository<Product>,
+
+    @InjectRepository(ProductImage)
+    private readonly productImageRepository: Repository<ProductImage>,
+
+    @InjectRepository(ProductSize)
+    private readonly productSizeRepository: Repository<ProductSize>
 
   ) {}
 
-  async create(createProductDto: CreateProductDto)  {
-
-    return 'This action adds a new product'
-    // try {
-
-    //   const Product = this.productRepository.create( createProductDto )
-
-    //   await this.productRepository.save( Product )
-
-    //   return Product
-
-    // } catch (error) {
-    //   this.handleExceptions( error )
-    // }
-  }
+  async create(createProductDto: CreateProductDto) {
+    try {
+       const { sizes = [], images = [], gender, ...productDetails } = createProductDto;
+   
+       // Busca o crea los tamaños
+       const findOrCreateSizes = await Promise.all(sizes.map(async ( size ) => {
+         let sizeEntity = await this.productSizeRepository.findOne({ where: { size, gender } });
+         if (!sizeEntity) {
+           sizeEntity = this.productSizeRepository.create({ size, gender });
+           await this.productSizeRepository.save(sizeEntity);
+         }
+         return sizeEntity;
+       }));
+   
+       // Crea las imágenes
+       const productImages = images.map(image => this.productImageRepository.create({ url: image }));
+   
+       // Crea el producto con los tamaños y las imágenes
+       const product = this.productRepository.create({
+         ...productDetails,
+         sizes: findOrCreateSizes,
+         images: productImages,
+       });
+   
+       await this.productRepository.save(product);
+   
+       return { ...product, images, sizes, gender };
+    } catch (error) {
+       this.handleExceptions(error);
+    }
+   }
+   
 
   async findAll( paginationDto: PaginationDto ) {
 
     const { limit = 10, offset = 0 } = paginationDto
 
-    return await this.productRepository.find({
+    const products = await this.productRepository.find({
       take: limit,
-      skip: offset
+      skip: offset,
+      relations: {
+        images: true,
+        sizes: true,
+      }
     })
+
+    return products.map( ({ images, sizes, ...rest }) => ({
+      ...rest,
+      images: images.map( ({ url }) => url ),
+      sizes: sizes.map( ({ size, gender }) => ({ size, gender }))
+    }))
+
   }
 
   async findOne( term: string ) {
@@ -54,12 +88,15 @@ export class ProductsService {
       if ( isUUID( term ) ) {
         product = await this.productRepository.findOneBy({ id: term })
       } else {
-        const queryBilder = this.productRepository.createQueryBuilder();
+        const queryBilder = this.productRepository.createQueryBuilder('prod');
         product = await queryBilder
           .where(`LOWER(title) = LOWER(:title) or slug = :slug`, {
             title: term,
             slug: term
-          }).getOne() 
+          })
+          .leftJoinAndSelect('prod.sizes', 'prodSizes')
+          .leftJoinAndSelect('prod.images', 'prodImages')
+          .getOne() 
       }
 
       if ( !product ) throw new NotFoundException( 'Product not found' )
@@ -70,10 +107,21 @@ export class ProductsService {
     }
   }
 
+  async findOnePlane( term: string ) {
+
+    const { images = [], sizes = [], ...rest } = await this.findOne( term );
+
+    return {
+      ...rest,
+      images: images.map( ({ url }) => url ),
+      sizes: sizes.map(({ size, gender }) => ({ size, gender }))
+    }
+  }
+
+
   async update( id: string, updateProductDto: UpdateProductDto ) {
 
-    return 'This action updates a #${id} product'
-
+    return `This action updates a #${id} product`
     // const product = await this.productRepository.preload({
     //   id: id,
     //   ...updateProductDto

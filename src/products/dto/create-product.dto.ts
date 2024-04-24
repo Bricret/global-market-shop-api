@@ -8,7 +8,6 @@ import {
     IsString, 
     MinLength 
 } from "class-validator";
-import { ProductImage } from "../entities";
 
 export class CreateProductDto {
 
@@ -40,9 +39,12 @@ export class CreateProductDto {
     sizes?: string[];
 
     @IsIn(['men', 'women', 'kids', 'unisex'])
-    gender: string;
-
     @IsOptional()
-    images?: ProductImage
+    gender?: string;
+
+    @IsString({ each: true })
+    @IsArray()
+    @IsOptional()
+    images?: string[];
 
 }

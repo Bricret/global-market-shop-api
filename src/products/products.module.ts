@@ -13,7 +13,7 @@ import { Product, ProductImage, ProductSize } from './entities';
     TypeOrmModule.forFeature([ 
       Product, 
       ProductImage, 
-      ProductSize
+      ProductSize,
     ]),
   ]
 })

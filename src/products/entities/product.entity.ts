@@ -36,17 +36,17 @@ export class Product {
     @ManyToMany(
         () => ProductSize,
         (productSize) => productSize.product,
-        { cascade: true }
+        { cascade: true, eager: true }
     )
     @JoinTable()
-    sizes?: ProductSize
+    sizes?: ProductSize[]
 
     @OneToMany(
         () => ProductImage,
         (productImage) => productImage.product,
-        { cascade: true }
+        { cascade: true, eager: true }
     )
-    images?: ProductImage
+    images?: ProductImage[]
 
     @BeforeInsert()
     checkSlugInsert() {
