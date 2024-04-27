@@ -2,7 +2,9 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGenerated
 import { ProductImage } from "./index";
 
 
-@Entity()
+@Entity({
+    name: 'products'
+})
 export class Product {
 
     @PrimaryGeneratedColumn('uuid')
