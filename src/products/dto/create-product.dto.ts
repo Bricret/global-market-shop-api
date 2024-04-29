@@ -47,4 +47,7 @@ export class CreateProductDto {
     @IsOptional()
     images?: string[];
 
+    @IsString()
+    business: string;
+
 }

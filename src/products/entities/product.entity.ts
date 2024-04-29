@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from "./index";
+import { Business } from "src/business/entities/business.entity";
 
 
 @Entity({
@@ -51,8 +52,16 @@ export class Product {
         (productImage) => productImage.product,
         { cascade: true, eager: true }
     )
-    images?: ProductImage[]
+    images?: ProductImage[];
 
+    @ManyToOne(
+        () => Business,
+        (business) => business.products,
+        { onDelete: 'CASCADE' }
+    )
+    business: Business;
+
+    
     @BeforeInsert()
     checkSlugInsert() {
         if ( !this.slug ) {
