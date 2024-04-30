@@ -8,6 +8,7 @@ export class CommonService {
   
   constructor() {}
 
+  //TODO: Implement a method to handle exceptions
   handleExceptions( error: any ) {
 
     if ( error.code === '23505' ) throw new BadRequestException( error.detail )
