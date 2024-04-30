@@ -13,6 +13,7 @@ import { CommonModule } from 'src/common/common.module';
       Category,
     ]),
     CommonModule,
+    
   ]
 })
 export class CategoryModule {}

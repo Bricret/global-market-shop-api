@@ -36,5 +36,10 @@ export class CreateBusinessDto {
     @IsArray()
     @IsOptional()
     products?: string[];
+
+    @IsString({ each: true })
+    @IsArray()
+    @IsOptional()
+    categories?: string[];
     
 }

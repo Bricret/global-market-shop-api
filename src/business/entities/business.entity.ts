@@ -1,5 +1,6 @@
+import { Category } from "src/category/entities/category.entity";
 import { Product } from "src/products/entities";
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
     name: 'business'
@@ -47,7 +48,13 @@ export class Business {
         ( product ) => product.business,
         { cascade: true, eager: true }
     )
-    products?: Product[]
+    products?: Product[];
+
+    @ManyToMany(
+        () => Category,
+        category => category.businesses
+    )
+    categories?: Category[];
 
 
 

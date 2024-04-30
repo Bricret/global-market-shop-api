@@ -23,7 +23,7 @@ export class BusinessService {
 
   async create(createBusinessDto: CreateBusinessDto) {
 
-    const { products, ...rest } = createBusinessDto;
+    const { products, categories, ...rest } = createBusinessDto;
 
     await this.findOneWhenDontExist( rest.name );
 
@@ -91,7 +91,7 @@ export class BusinessService {
   async update(id: string, updateBusinessDto: UpdateBusinessDto) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { products, ...rest } = updateBusinessDto;
+    const { products, categories, ...rest } = updateBusinessDto;
 
     const business = await this.businessRepository.preload( { id, ...rest } );
 
