@@ -1,5 +1,5 @@
 import { DataSource, Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate as isUUID } from 'uuid';
 
@@ -40,7 +40,7 @@ export class ProductsService {
 
       return { ...product, images };
     } catch (error) {
-       this.commonService.handleExceptions( error )
+       this.commonService.handleExceptions( error, 'BR' )
     }
   }
 
@@ -80,7 +80,7 @@ export class ProductsService {
 
 
     if ( !product ) 
-      this.commonService.handleExceptions(`Product with ${ term } not found`);
+      this.commonService.handleExceptions( `Product with ${ term } not found`, 'NF' );
 
     return product;
   }
@@ -101,7 +101,7 @@ export class ProductsService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images, business, ...toUpdate } = updateProductDto
     const product = await this.productRepository.preload({ id, ...toUpdate })
-    if ( !product ) throw new NotFoundException( 'Product not found' )
+    if ( !product ) this.commonService.handleExceptions( 'Product not found', 'NF' )
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
@@ -126,7 +126,7 @@ export class ProductsService {
     } catch (error) {
 
       await queryRunner.rollbackTransaction()
-      this.commonService.handleExceptions( error )
+      this.commonService.handleExceptions( error, 'BR' )
     }
 
   }
@@ -152,7 +152,7 @@ export class ProductsService {
       
       return true;
     } catch (error) {
-      this.commonService.handleExceptions( error )
+      this.commonService.handleExceptions( error, 'BR' )
     }
   }
 

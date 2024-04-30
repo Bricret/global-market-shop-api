@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -29,7 +29,7 @@ export class BusinessService {
 
     const { products, categories, ...rest } = createBusinessDto;
 
-    await this.findOneWhenDontExist( rest.name );
+    await this.findOneWhoDontExist( rest.name );
 
     const business = this.businessRepository.create({
       ...rest,
@@ -60,7 +60,7 @@ export class BusinessService {
 
   }
 
-  async findOneWhenDontExist( term: string ) {
+  async findOneWhoDontExist( term: string ) {
 
     const queryBuilder = this.businessRepository.createQueryBuilder('prod'); 
     const business = await queryBuilder
@@ -69,7 +69,7 @@ export class BusinessService {
         slug: term.toLowerCase(),
       }).getOne();
 
-      if ( business ) this.commonService.handleExceptions(`Business with ${ term } already exists`);
+      if ( business ) this.commonService.handleExceptions(`Business with ${ term } already exists`, 'BR');
 
     return business;
   }
@@ -89,7 +89,7 @@ export class BusinessService {
       .leftJoinAndSelect('busi.products','busiProducts')
       .getOne()
     }
-      if ( !business ) this.commonService.handleExceptions(`Business with ${ term } does not exist`);
+      if ( !business ) this.commonService.handleExceptions( `Business with ${ term } does not exist`, 'NF' );
 
     return business;
   }
@@ -100,7 +100,7 @@ export class BusinessService {
     const { products, categories, ...rest } = updateBusinessDto;
 
     const business = await this.businessRepository.preload( { id, ...rest } );
-    if ( !business ) this.commonService.handleExceptions( 'Business not found, check ID' );
+    if ( !business ) this.commonService.handleExceptions( 'Business not found, check ID', 'NF' );
 
     if (categories) {
       const categoriesFindPromises = categories.map(async (category) => {
@@ -111,7 +111,7 @@ export class BusinessService {
 
            return categoryFind;
          } catch (error) {
-           throw new BadRequestException(error.message);
+           this.commonService.handleExceptions(error.message, 'BR');
          }
       });
      
@@ -121,7 +121,7 @@ export class BusinessService {
         business.categories = categoriesFind;
 
       } catch (error) {
-        throw new BadRequestException(error.message);
+        this.commonService.handleExceptions(error.message, 'BR');
       }
     }
     await this.businessRepository.save(business);

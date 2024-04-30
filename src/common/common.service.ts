@@ -13,20 +13,22 @@ export class CommonService {
 
   handleExceptions( error: any, type: MessageType ) {
 
+    console.log( error )
+
     switch ( type ) {
         
         case 'NF':
-          this.logMessage( error.message )
-          throw new NotFoundException( error.message )
+          this.logMessage( error )
+          throw new NotFoundException( error )
           break
   
         case 'BR':
-          this.logMessage( error.message )
-          throw new BadRequestException( error.message )
+          this.logMessage( error )
+          throw new BadRequestException( error )
           break
   
         default:
-          this.logMessage( error.message )
+          this.logMessage( error )
           throw new InternalServerErrorException( 'Unexpected error, check server logs' )
           break
     }

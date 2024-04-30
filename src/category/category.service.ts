@@ -35,7 +35,7 @@ export class CategoryService {
       return category;
       
     } catch (error) {
-      this.commonService.handleExceptions(error);
+      this.commonService.handleExceptions(error, 'BR');
     }
   }
 
@@ -63,7 +63,7 @@ export class CategoryService {
 
     const categoryFind = await this.categoryRepository.findOneBy({ id: term })
 
-    if ( !categoryFind ) this.commonService.handleExceptions(`Category with ${ term } not found`);
+    if ( !categoryFind ) this.commonService.handleExceptions(`Category with ${ term } not found`, 'NF');
 
     return categoryFind;
 
@@ -73,7 +73,7 @@ export class CategoryService {
 
     const categories = await this.categoryRepository.preload( { id, ...updateCategoryDto } );
 
-    if ( !categories ) this.commonService.handleExceptions( 'Business not found, check ID' );
+    if ( !categories ) this.commonService.handleExceptions( 'Business not found, check ID', 'NF' );
 
     await this.categoryRepository.save( categories );
 
