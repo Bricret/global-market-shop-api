@@ -49,5 +49,4 @@ export class CreateProductDto {
 
     @IsString()
     business: string;
-
 }

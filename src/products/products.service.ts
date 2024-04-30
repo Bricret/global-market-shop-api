@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate as isUUID } from 'uuid';
@@ -6,6 +6,7 @@ import { validate as isUUID } from 'uuid';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ProductImage, Product } from './entities';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class ProductsService {
@@ -22,24 +23,27 @@ export class ProductsService {
 
     private readonly dataSource: DataSource,
 
+    private readonly commonService: CommonService,
+
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
-       const { images = [], ...productDetails } = createProductDto;
+      const { images = [], business, ...productDetails } = createProductDto;
 
-       const product = this.productRepository.create({
-         ...productDetails,
-         images: images.map(image => this.productImageRepository.create({ url: image }))
-       });
-   
-       await this.productRepository.save(product);
-   
-       return { ...product, images };
+      const product = this.productRepository.create({
+        ...productDetails,
+        images: images.map(image => this.productImageRepository.create({ url: image })),
+        business: { id: business }
+      });
+
+      await this.productRepository.save( product );
+
+      return { ...product, images };
     } catch (error) {
-       this.handleExceptions(error);
+       this.commonService.handleExceptions( error )
     }
-   }   
+  }
 
   async findAll( paginationDto: PaginationDto ) {
 
@@ -48,7 +52,7 @@ export class ProductsService {
     const products = await this.productRepository.find({
       take: limit,
       skip: offset,
-      relations: { images: true }
+      relations: { images: true, business: true }
     })
 
     return products.map( ({ images, ...rest }) => ({
@@ -77,7 +81,7 @@ export class ProductsService {
 
 
     if ( !product ) 
-      this.handleExceptions(`Product with ${ term } not found`);
+      this.commonService.handleExceptions(`Product with ${ term } not found`);
 
     return product;
   }
@@ -95,10 +99,8 @@ export class ProductsService {
 
   async update( id: string, updateProductDto: UpdateProductDto ) {
 
-    const { images, ...toUpdate } = updateProductDto
-
+    const { images, business, ...toUpdate } = updateProductDto
     const product = await this.productRepository.preload({ id, ...toUpdate })
-
     if ( !product ) throw new NotFoundException( 'Product not found' )
 
     const queryRunner = this.dataSource.createQueryRunner()
@@ -124,7 +126,7 @@ export class ProductsService {
     } catch (error) {
 
       await queryRunner.rollbackTransaction()
-      this.handleExceptions( error )
+      this.commonService.handleExceptions( error )
     }
 
   }
@@ -132,17 +134,11 @@ export class ProductsService {
   async remove( id: string ) {
 
     this.findOne( id )
-     
     return await this.productRepository.delete( id )
+    
   }
 
-  private handleExceptions( error: any ) {
 
-    if ( error.code === '23505' ) throw new BadRequestException( error.detail )
-
-    this.logger.error( error )
-    throw new InternalServerErrorException( 'Unexpected error, check server logs' )
-  }
 
   async deleteAllProducts() {
     const queryProduct = this.productRepository.createQueryBuilder('prod');
@@ -156,9 +152,8 @@ export class ProductsService {
       
       return true;
     } catch (error) {
-      this.handleExceptions( error )
+      this.commonService.handleExceptions( error )
     }
   }
 
 }
-

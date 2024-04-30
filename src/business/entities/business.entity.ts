@@ -36,5 +36,5 @@ export class Business {
         ( product ) => product.business,
         { cascade: true, eager: true }
     )
-    products: Product[]
+    products?: Product[]
 }

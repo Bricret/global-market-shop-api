@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { BusinessService } from './business.service';
 import { CreateBusinessDto, UpdateBusinessDto } from './dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 
 
@@ -14,18 +15,18 @@ export class BusinessController {
   }
 
   @Get()
-  findAll() {
-    return this.businessService.findAll();
+  findAll(@Query() paginationDto: PaginationDto ) {
+    return this.businessService.findAll( paginationDto );
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.businessService.findOne(+id);
+    return this.businessService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBusinessDto: UpdateBusinessDto) {
-    return this.businessService.update(+id, updateBusinessDto);
+    return this.businessService.update(id, updateBusinessDto);
   }
 
   @Delete(':id')
