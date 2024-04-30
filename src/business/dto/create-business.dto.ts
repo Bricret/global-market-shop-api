@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsInt, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
 
 
 export class CreateBusinessDto {
@@ -6,6 +6,10 @@ export class CreateBusinessDto {
     @IsString()
     @MinLength(1)
     name: string;
+
+    @IsString()
+    @IsOptional()
+    slug?: string;
 
     @IsString()
     address: string;
@@ -23,6 +27,10 @@ export class CreateBusinessDto {
     @IsString()
     @IsOptional()
     email?: string;
+
+    @IsBoolean()
+    @IsOptional()
+    is_active?: boolean;
 
     @IsString({ each: true })
     @IsArray()

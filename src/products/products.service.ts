@@ -1,17 +1,16 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate as isUUID } from 'uuid';
 
 import { CreateProductDto, UpdateProductDto } from './dto';
+import { CommonService } from 'src/common/common.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ProductImage, Product } from './entities';
-import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class ProductsService {
 
-  private readonly logger = new Logger( 'ProductsService' )
 
   constructor(
 

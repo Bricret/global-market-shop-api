@@ -58,8 +58,9 @@ export class BusinessService {
 
     const queryBuilder = this.businessRepository.createQueryBuilder('prod'); 
     const business = await queryBuilder
-      .where('UPPER(name) =:name', {
+      .where('UPPER(name) =:name or slug =:slug', {
         name: term.toUpperCase(),
+        slug: term.toLowerCase(),
       }).getOne();
 
       if ( business ) this.commonService.handleExceptions(`Business with ${ term } already exists`);
@@ -75,8 +76,9 @@ export class BusinessService {
     } else {
     const queryBuilder = this.businessRepository.createQueryBuilder('busi'); 
     business = await queryBuilder
-      .where('UPPER(name) =:name', {
+      .where('UPPER(name) =:name or slug =:slug', {
         name: term.toUpperCase(),
+        slug: term.toLowerCase(),
       })
       .leftJoinAndSelect('busi.products','busiProducts')
       .getOne()

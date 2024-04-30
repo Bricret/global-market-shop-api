@@ -1,5 +1,5 @@
 import { Product } from "src/products/entities";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
     name: 'business'
@@ -13,6 +13,12 @@ export class Business {
         unique: true,
     })
     name: string;
+
+    @Column('text', {
+        unique: true,
+        nullable: false,
+    })
+    slug: string;
 
     @Column('text')
     address: string;
@@ -29,7 +35,12 @@ export class Business {
     @Column('text',{
         nullable: true
     })
-    email: string;
+    email?: string;
+
+    @Column('boolean', {
+        default: true
+    })
+    is_active?: boolean;
 
     @OneToMany(
         () => Product,
@@ -37,4 +48,28 @@ export class Business {
         { cascade: true, eager: true }
     )
     products?: Product[]
+
+
+
+    @BeforeInsert()
+    checkSlugInsert() {
+        if ( !this.slug ) {
+            this.slug = this.name
+        }
+
+        this.slug = this.slug
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll("'", "")
+        
+    }
+
+
+    @BeforeUpdate()
+    checkSlugUpdate() {
+        this.slug = this.slug
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll("'", "")
+    }
 }

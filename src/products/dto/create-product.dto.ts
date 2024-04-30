@@ -1,5 +1,6 @@
 import { 
     IsArray, 
+    IsBoolean, 
     IsIn, 
     IsInt, 
     IsNumber, 
@@ -41,6 +42,10 @@ export class CreateProductDto {
     @IsIn(['men', 'women', 'kids', 'unisex'])
     @IsOptional()
     gender?: string;
+
+    @IsBoolean()
+    @IsOptional()
+    is_active?: boolean;
 
     @IsString({ each: true })
     @IsArray()

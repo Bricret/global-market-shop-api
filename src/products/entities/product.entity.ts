@@ -47,6 +47,11 @@ export class Product {
     })
     gender?: string
 
+    @Column('boolean', {
+        default: true
+    })
+    is_active: boolean;
+
     @OneToMany(
         () => ProductImage,
         (productImage) => productImage.product,
