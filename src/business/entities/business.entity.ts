@@ -1,6 +1,6 @@
 import { Category } from "src/category/entities/category.entity";
 import { Product } from "src/products/entities";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
     name: 'business'
@@ -52,9 +52,11 @@ export class Business {
 
     @ManyToMany(
         () => Category,
-        category => category.businesses
+        category => category.businesses,
+        { cascade: true }
     )
-    categories?: Category[];
+    @JoinTable() 
+    categories: Category[];
 
 
 

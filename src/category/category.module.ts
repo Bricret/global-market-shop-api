@@ -13,7 +13,9 @@ import { CommonModule } from 'src/common/common.module';
       Category,
     ]),
     CommonModule,
-    
-  ]
+  ],
+  exports: [
+    TypeOrmModule.forFeature([Category])
+  ],
 })
 export class CategoryModule {}

@@ -39,7 +39,6 @@ export class CreateBusinessDto {
 
     @IsString({ each: true })
     @IsArray()
-    @IsOptional()
-    categories?: string[];
+    categories: string[];
     
 }

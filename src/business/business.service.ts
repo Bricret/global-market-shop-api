@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -7,6 +7,7 @@ import { CreateBusinessDto, UpdateBusinessDto } from './dto';
 import { CommonService } from 'src/common/common.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
+import { Category } from 'src/category/entities/category.entity';
 
 
 @Injectable()
@@ -19,6 +20,9 @@ export class BusinessService {
     @InjectRepository(Business)
     private readonly businessRepository: Repository<Business>,
 
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+
   ) {}
 
   async create(createBusinessDto: CreateBusinessDto) {
@@ -29,9 +33,11 @@ export class BusinessService {
 
     const business = this.businessRepository.create({
       ...rest,
-      products: products?.map( product => ({ id: product }) )
+      products: products?.map( product => ({ id: product }) ),
+      categories: categories?.map( category => ({ id: category }) ),
     });
-    await this.businessRepository.save( business );
+
+    await this.businessRepository.save( business ); 
 
     return business;
 
@@ -88,19 +94,38 @@ export class BusinessService {
     return business;
   }
 
-  async update(id: string, updateBusinessDto: UpdateBusinessDto) {
+  async update( id: string, updateBusinessDto: UpdateBusinessDto ) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { products, categories, ...rest } = updateBusinessDto;
 
     const business = await this.businessRepository.preload( { id, ...rest } );
-
     if ( !business ) this.commonService.handleExceptions( 'Business not found, check ID' );
 
-    await this.businessRepository.save( business );
+    if (categories) {
+      const categoriesFindPromises = categories.map(async (category) => {
+         try {
 
+           const categoryFind = await this.categoryRepository.findOneBy({ id: category });
+           if (!categoryFind) throw new Error(`Category with ID ${category} not found`);
+
+           return categoryFind;
+         } catch (error) {
+           throw new BadRequestException(error.message);
+         }
+      });
+     
+      try {
+
+        const categoriesFind = await Promise.all(categoriesFindPromises);
+        business.categories = categoriesFind;
+
+      } catch (error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+    await this.businessRepository.save(business);
     return business;
-
   }
 
   async remove( id: string ) {
