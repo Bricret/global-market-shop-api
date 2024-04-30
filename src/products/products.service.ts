@@ -99,6 +99,7 @@ export class ProductsService {
 
   async update( id: string, updateProductDto: UpdateProductDto ) {
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images, business, ...toUpdate } = updateProductDto
     const product = await this.productRepository.preload({ id, ...toUpdate })
     if ( !product ) throw new NotFoundException( 'Product not found' )

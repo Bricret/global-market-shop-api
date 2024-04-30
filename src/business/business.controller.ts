@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
 import { BusinessService } from './business.service';
 import { CreateBusinessDto, UpdateBusinessDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
@@ -19,18 +19,21 @@ export class BusinessController {
     return this.businessService.findAll( paginationDto );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.businessService.findOne(id);
+  @Get(':term')
+  findOne( @Param( 'term' ) term: string ) {
+    return this.businessService.findOneWhenExist( term );
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBusinessDto: UpdateBusinessDto) {
+  update(
+    @Param( 'id', ParseUUIDPipe ) id: string, 
+    @Body() updateBusinessDto: UpdateBusinessDto
+  ) {
     return this.businessService.update(id, updateBusinessDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.businessService.remove(+id);
+  remove( @Param( 'id', ParseUUIDPipe ) id: string ) {
+    return this.businessService.remove(id);
   }
 }
