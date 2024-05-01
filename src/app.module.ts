@@ -7,6 +7,7 @@ import { SeedModule } from './seed/seed.module';
 import { FilesModule } from './files/files.module';
 import { BusinessModule } from './business/business.module';
 import { CategoryModule } from './category/category.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CategoryModule } from './category/category.module';
     FilesModule,
     BusinessModule,
     CategoryModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
