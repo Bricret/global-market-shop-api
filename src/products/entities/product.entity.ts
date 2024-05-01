@@ -1,6 +1,7 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from "./index";
 import { Business } from "src/business/entities/business.entity";
+import { Category } from "src/category/entities/category.entity";
 
 
 @Entity({
@@ -65,6 +66,14 @@ export class Product {
         { onDelete: 'CASCADE' }
     )
     business: Business;
+
+    @ManyToMany(
+        () => Category,
+        category => category.businesses,
+        { cascade: true }
+    )
+    @JoinTable() 
+    categories: Category[];
 
     
     @BeforeInsert()

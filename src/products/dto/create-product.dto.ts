@@ -54,4 +54,8 @@ export class CreateProductDto {
 
     @IsString()
     business: string;
+
+    @IsString({ each: true })
+    @IsArray()
+    categories: string[];
 }

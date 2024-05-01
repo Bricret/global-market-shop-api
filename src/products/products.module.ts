@@ -5,6 +5,7 @@ import { CommonModule } from 'src/common/common.module';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { Product, ProductImage } from './entities';
+import { Category } from 'src/category/entities/category.entity';
 
 
 @Module({
@@ -14,6 +15,7 @@ import { Product, ProductImage } from './entities';
     TypeOrmModule.forFeature([ 
       Product, 
       ProductImage,
+      Category,
     ]),
     CommonModule,
   ],

@@ -7,6 +7,7 @@ import { CreateProductDto, UpdateProductDto } from './dto';
 import { CommonService } from 'src/common/common.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ProductImage, Product } from './entities';
+import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class ProductsService {
@@ -20,6 +21,9 @@ export class ProductsService {
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
 
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+
     private readonly dataSource: DataSource,
 
     private readonly commonService: CommonService,
@@ -28,17 +32,18 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     try {
-      const { images = [], business, ...productDetails } = createProductDto;
+      const { images = [], business, categories = [], ...productDetails } = createProductDto;
 
       const product = this.productRepository.create({
         ...productDetails,
         images: images.map(image => this.productImageRepository.create({ url: image })),
-        business: { id: business }
+        business: { id: business },
+        categories: categories.map( category => ({ id: category }) )
       });
 
       await this.productRepository.save( product );
 
-      return { ...product, images };
+      return { ...product, images, business, categories };
     } catch (error) {
        this.commonService.handleExceptions( error, 'BR' )
     }
@@ -99,7 +104,7 @@ export class ProductsService {
   async update( id: string, updateProductDto: UpdateProductDto ) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { images, business, ...toUpdate } = updateProductDto
+    const { images, business, categories, ...toUpdate } = updateProductDto
     const product = await this.productRepository.preload({ id, ...toUpdate })
     if ( !product ) this.commonService.handleExceptions( 'Product not found', 'NF' )
 
@@ -115,6 +120,29 @@ export class ProductsService {
         product.images = images.map(
           url => this.productImageRepository.create({ url })
         )
+      }
+
+      if (categories) {
+        const categoriesFindPromises = categories.map(async (category) => {
+           try {
+  
+             const categoryFind = await this.categoryRepository.findOneBy({ id: category });
+             if (!categoryFind) throw new Error(`Category with ID ${category} not found`);
+  
+             return categoryFind;
+           } catch (error) {
+             this.commonService.handleExceptions(error.message, 'BR');
+           }
+        });
+       
+        try {
+  
+          const categoriesFind = await Promise.all(categoriesFindPromises);
+          product.categories = categoriesFind;
+  
+        } catch (error) {
+          this.commonService.handleExceptions(error.message, 'BR');
+        }
       }
 
       await queryRunner.manager.save( product )
