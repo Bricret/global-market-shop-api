@@ -1,12 +1,14 @@
-import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { User } from "../entities/user.entity";
-import { JwtPayload } from "../interfaces/jwt-payload.interface";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { ConfigService } from "@nestjs/config";
-import { CommonService } from "src/common/common.service";
+import { ExtractJwt, Strategy } from "passport-jwt";
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { PassportStrategy } from "@nestjs/passport";
+import { Repository } from "typeorm";
+
+
+import { CommonService } from "src/common/common.service";
+import { JwtPayload } from "../interfaces/jwt-payload.interface";
+import { User } from "../entities/user.entity";
 
 
 @Injectable()

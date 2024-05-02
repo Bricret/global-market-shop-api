@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 
 
 import { CommonService } from 'src/common/common.service';
 import { CreateUserDto, LoginUserDto } from './dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { User } from './entities/user.entity';
 
 
@@ -17,7 +19,9 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    private readonly commonService: CommonService
+    private readonly commonService: CommonService,
+
+    private readonly jwtService: JwtService,
 
   ) {}
 
@@ -35,8 +39,10 @@ export class AuthService {
       await this.userRepository.save( user );
       delete user.password;
 
-      return user;
-      //TODO: Retornar JWT  de acceso
+      return {
+        ...user,
+        token: this.getJwToken({ email: user.email })
+      };
 
     } catch (error) {
       this.commonService.handleExceptions(error.detail, 'BR');
@@ -59,9 +65,17 @@ export class AuthService {
       this.commonService.handleExceptions( 'Credential are not valid (password)', 'UE' );
     }
 
-    return user;
-    //TODO: Retornar JWT de acceso
 
+    return {
+      ...user,
+      token: this.getJwToken({ email: user.email })
+    };
+  }
+
+  private getJwToken( payload: JwtPayload ) {
+
+    const token = this.jwtService.sign( payload );
+    return token;
 
   }
 
