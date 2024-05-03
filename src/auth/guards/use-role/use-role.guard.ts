@@ -31,6 +31,8 @@ export class UseRoleGuard implements CanActivate {
       if ( roles.includes(role) ) return true;
     }
 
+    console.log(roles, user.roles);
+
     this.commonService.handleExceptions( `User ${ user.fullName } need a valid role: [${ roles }]`, 'FB' );
   }
 }
