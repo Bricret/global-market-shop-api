@@ -9,9 +9,7 @@ export const GetUser = createParamDecorator(
 
         if ( !user ) throw new InternalServerErrorException( 'User not found (Request)' )
 
-        
-        console.log({ data })
-
+        if ( data ) return user[ data ];
         return user
     }
 ); 
