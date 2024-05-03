@@ -3,6 +3,8 @@ import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
+import { GetUser } from './decorators/get-user.decorator';
+import { User } from './entities/user.entity';
 
 
 
@@ -27,11 +29,14 @@ export class AuthController {
 
   @Get('private')
   @UseGuards( AuthGuard() )
-  testingPrivateRoute() {
+  testingPrivateRoute(
+    @GetUser([ 'fullName', 'id', 'roles' ]) user: User
+  ) {
 
     return {
       ok: true,
-      message: 'This is a private route'
+      message: 'This is a private route',
+      user
     }
   }
 
