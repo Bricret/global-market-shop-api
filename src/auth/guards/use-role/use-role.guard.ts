@@ -3,6 +3,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { CommonService } from '../../../common/common.service';
 import { User } from 'src/auth/entities/user.entity';
+import { META_ROLES } from 'src/auth/decorators/role-protected.decorator';
 
 @Injectable()
 export class UseRoleGuard implements CanActivate {
@@ -19,7 +20,7 @@ export class UseRoleGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
 
-    const roles: string[] = this.reflector.get<string[]>('roles', context.getHandler());
+    const roles: string[] = this.reflector.get<string[]>( META_ROLES, context.getHandler() );
 
     const req = context.switchToHttp().getRequest();
     const user = req.user as User;
