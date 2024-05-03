@@ -41,7 +41,7 @@ export class AuthService {
 
       return {
         ...user,
-        token: this.getJwToken({ email: user.email })
+        token: this.getJwToken({ id: user.id })
       };
 
     } catch (error) {
@@ -56,7 +56,7 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { email: true, password: true }
+      select: { email: true, password: true, id: true }
     });
 
     if ( !user ) this.commonService.handleExceptions( 'Credential are not valid (email)', 'UE' );
@@ -65,10 +65,9 @@ export class AuthService {
       this.commonService.handleExceptions( 'Credential are not valid (password)', 'UE' );
     }
 
-
     return {
       ...user,
-      token: this.getJwToken({ email: user.email })
+      token: this.getJwToken({ id: user.id })
     };
   }
 
