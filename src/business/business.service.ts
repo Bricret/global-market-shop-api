@@ -55,7 +55,7 @@ export class BusinessService {
 
     return business.map( ({ products, ...rest }) => ({
       ...rest,
-      products: products.map( ( product ) => product )
+      products: products.map( ( product ) => product.id )
     }));
 
   }
@@ -91,7 +91,10 @@ export class BusinessService {
     }
       if ( !business ) this.commonService.handleExceptions( `Business with ${ term } does not exist`, 'NF' );
 
-    return business;
+    return {
+      ...business,
+      products: business.products.map( ({ id }) => id )
+    };
   }
 
   async update( id: string, updateBusinessDto: UpdateBusinessDto ) {

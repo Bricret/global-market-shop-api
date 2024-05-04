@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Business } from "src/business/entities/business.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('users')
@@ -46,6 +47,13 @@ export class User {
         default: ['user'],
     })
     roles: string[];
+
+    @OneToMany(
+        () => Business,
+        ( business ) => business.user,
+        { cascade: true, eager: true }
+    )
+    businesses?: Business[];
 
 
     @BeforeInsert()

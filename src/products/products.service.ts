@@ -56,7 +56,7 @@ export class ProductsService {
     const products = await this.productRepository.find({
       take: limit,
       skip: offset,
-      relations: { images: true, business: true }
+      relations: { images: true, business: true, categories: true }
     })
 
     return products.map( ({ images, business, ...rest }) => ({
@@ -72,7 +72,10 @@ export class ProductsService {
     let product: Product;
 
     if ( isUUID(term) ) {
-      product = await this.productRepository.findOneBy({ id: term });
+      product = await this.productRepository.findOne({
+        where: { id: term },
+        relations: [ 'images', 'business', 'categories' ]
+      });
     } else {
       const queryBuilder = this.productRepository.createQueryBuilder('prod'); 
       product = await queryBuilder
@@ -93,11 +96,12 @@ export class ProductsService {
 
   async findOnePlane( term: string ) {
 
-    const { images = [], ...rest } = await this.findOne( term );
+    const { images = [], business, ...rest } = await this.findOne( term );
 
     return {
       ...rest,
       images: images.map( ({ url }) => url ),
+      business: business.id,
     }
   }
 

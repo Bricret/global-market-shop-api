@@ -1,6 +1,7 @@
+import { User } from "src/auth/entities/user.entity";
 import { Category } from "src/category/entities/category.entity";
 import { Product } from "src/products/entities";
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
     name: 'business'
@@ -58,7 +59,12 @@ export class Business {
     @JoinTable() 
     categories: Category[];
 
-
+    @ManyToOne(
+        () => User,
+        ( user ) => user.businesses,
+        { cascade: true, eager: true }
+    )
+    user: User;
 
     @BeforeInsert()
     checkSlugInsert() {
