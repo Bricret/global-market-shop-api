@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe
 import { BusinessService } from './business.service';
 import { CreateBusinessDto, UpdateBusinessDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Auth } from 'src/auth/decorators';
+import { ValidRoles } from 'src/auth/interfaces';
 
 
 
@@ -10,6 +12,7 @@ export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}
 
   @Post()
+  @Auth( ValidRoles.admin )
   create(@Body() createBusinessDto: CreateBusinessDto) {
     return this.businessService.create(createBusinessDto);
   }
@@ -25,6 +28,7 @@ export class BusinessController {
   }
 
   @Patch(':id')
+  @Auth( ValidRoles.admin )
   update(
     @Param( 'id', ParseUUIDPipe ) id: string, 
     @Body() updateBusinessDto: UpdateBusinessDto
@@ -33,6 +37,7 @@ export class BusinessController {
   }
 
   @Delete(':id')
+  @Auth( ValidRoles.admin )
   remove( @Param( 'id', ParseUUIDPipe ) id: string ) {
     return this.businessService.remove(id);
   }

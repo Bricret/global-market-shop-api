@@ -59,9 +59,10 @@ export class ProductsService {
       relations: { images: true, business: true }
     })
 
-    return products.map( ({ images, ...rest }) => ({
+    return products.map( ({ images, business, ...rest }) => ({
       ...rest,
-      images: images.map( ({ url }) => url )
+      images: images.map( ({ url }) => url ),
+      business: business.id,
     }))
 
   }

@@ -6,6 +6,7 @@ import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { Product, ProductImage } from './entities';
 import { Category } from 'src/category/entities/category.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { Category } from 'src/category/entities/category.entity';
       Category,
     ]),
     CommonModule,
+    AuthModule,
   ],
   exports: [
     ProductsService,
