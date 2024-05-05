@@ -65,10 +65,13 @@ export class AuthService {
       this.commonService.handleExceptions( 'Credential are not valid (password)', 'UE' );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { businesses, ...rest } = user;
+
     return {
-      ...user,
+      ...rest,
       token: this.getJwToken({ id: user.id })
-    };
+    }
   }
 
   private getJwToken( payload: JwtPayload ) {

@@ -109,6 +109,7 @@ export class BusinessService {
     };
   }
 
+  //TODO: Agregar validación de que el usuario que intenta actualizar es el dueño del negocio
   async update( id: string, updateBusinessDto: UpdateBusinessDto, user: User ) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
