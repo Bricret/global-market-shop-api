@@ -23,20 +23,33 @@ export class CommentsService {
 
   async create( createCommentDto: CreateCommentDto, user: User ) {
 
-    const { date } = createCommentDto
+    const { date, businessId, productId } = createCommentDto
 
+    if ( !businessId && !productId ) this.commonService.handleExceptions( 'You must provide a business or product id', 'BR' )
     if ( !date ) createCommentDto.date = new Date();
 
-    const comment = this.commentRepository.create({
-      ...createCommentDto,
-      user
-    });
+    let comment
 
-    const newComment = await this.commentRepository.save(comment);
+    if ( businessId ) {
+       comment = this.commentRepository.create({
+        ...createCommentDto,
+        user,
+        business: { id: businessId }
+      });
+    }
+
+    if ( productId ) {
+      comment = this.commentRepository.create({
+        ...createCommentDto,
+        user,
+        product: { id: productId }
+      });
+    }
+    
+    await this.commentRepository.save(comment);
 
     return {
-      ...newComment,
-      user: user.id
+      message: 'Comment created successfully',
     }
 
   }

@@ -1,5 +1,6 @@
 import { User } from "src/auth/entities/user.entity";
 import { Category } from "src/category/entities/category.entity";
+import { Comment } from "src/comments/entities/comment.entity";
 import { Product } from "src/products/entities";
 import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -65,6 +66,13 @@ export class Business {
         { onDelete: 'CASCADE' }
     )
     user: User;
+
+    @OneToMany(
+        () => Comment,
+        ( comment ) => comment.business,
+        { eager: true, cascade: true }
+    )
+    comments: Comment[];
 
     @BeforeInsert()
     checkSlugInsert() {

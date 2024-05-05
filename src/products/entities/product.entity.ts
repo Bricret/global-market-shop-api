@@ -2,6 +2,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, Many
 import { ProductImage } from "./index";
 import { Business } from "src/business/entities/business.entity";
 import { Category } from "src/category/entities/category.entity";
+import { Comment } from "src/comments/entities/comment.entity";
 
 
 @Entity({
@@ -74,6 +75,13 @@ export class Product {
     )
     @JoinTable() 
     categories: Category[];
+
+    @OneToMany(
+        () => Comment,
+        (comment) => comment.product,
+        { cascade: true }
+    )
+    comments: Comment[]
 
     
     @BeforeInsert()

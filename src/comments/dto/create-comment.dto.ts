@@ -14,4 +14,12 @@ export class CreateCommentDto {
     @IsOptional()
     date?: Date;
 
+    @IsString()
+    @IsOptional()
+    businessId?: string;
+
+    @IsString()
+    @IsOptional()
+    productId?: string;
+
 }
