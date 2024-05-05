@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 
 import { Auth } from 'src/auth/decorators';
@@ -7,6 +7,7 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ProductsService } from './products.service';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ValidRoles } from 'src/auth/interfaces';
+import { Product } from './entities';
 
 
 @ApiTags('Products')
@@ -16,6 +17,9 @@ export class ProductsController {
 
   @Post()
   @Auth( ValidRoles.admin )
+  @ApiResponse({ status: 201, description: 'Product was created successfully.', type: Product })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 403, description: 'Token related' })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
