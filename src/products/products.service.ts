@@ -45,7 +45,7 @@ export class ProductsService {
 
       return { ...product, images, business, categories };
     } catch (error) {
-       this.commonService.handleExceptions( error, 'BR' )
+       this.commonService.handleExceptions( error.message, 'BR' )
     }
   }
 
