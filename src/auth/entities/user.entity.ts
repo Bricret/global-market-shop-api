@@ -1,4 +1,5 @@
 import { Business } from "src/business/entities/business.entity";
+import { Comment } from "src/comments/entities/comment.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
@@ -54,6 +55,13 @@ export class User {
         { cascade: true, eager: true }
     )
     businesses?: Business[];
+
+    @OneToMany(
+        () => Comment,
+        ( comment ) => comment.user,
+        { cascade: true, eager: true }
+    )
+    comments?: Comment[];
 
 
     @BeforeInsert()
