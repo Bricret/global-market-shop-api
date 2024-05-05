@@ -4,6 +4,7 @@ import { CategoryController } from './category.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { CommonModule } from 'src/common/common.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   controllers: [CategoryController],
@@ -13,6 +14,7 @@ import { CommonModule } from 'src/common/common.module';
       Category,
     ]),
     CommonModule,
+    AuthModule,
   ],
   exports: [
     TypeOrmModule.forFeature([Category])

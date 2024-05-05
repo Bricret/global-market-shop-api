@@ -7,7 +7,6 @@ import { CommonService } from 'src/common/common.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 
-
 @Injectable()
 export class CategoryService {
 
@@ -22,7 +21,6 @@ export class CategoryService {
 
   }
 
-
   async create(createCategoryDto: CreateCategoryDto) {
 
     const name = createCategoryDto.name.toLowerCase();
@@ -35,7 +33,7 @@ export class CategoryService {
       return category;
       
     } catch (error) {
-      this.commonService.handleExceptions(error, 'BR');
+      this.commonService.handleExceptions( error.detail, 'BR' );
     }
   }
 
@@ -46,27 +44,23 @@ export class CategoryService {
     const categories = await this.categoryRepository.find({
       take: limit,
       skip: offset,
-      // relations: { businesses: true }
     });
 
     return categories;
-
-    //! This is the correct way to return the data when using relations
-    // return categories.map( ({ businesses, ...rest }) => ({
-    //   ...rest,
-    //   businesses: businesses.map( ( business ) => business )
-    // }));
 
   }
 
   async findOne( term: string ) {
 
-    const categoryFind = await this.categoryRepository.findOneBy({ id: term })
+    try {
+      const categoryFind = await this.categoryRepository.findOneBy({ id: term })
 
-    if ( !categoryFind ) this.commonService.handleExceptions(`Category with ${ term } not found`, 'NF');
-
-    return categoryFind;
-
+      if ( !categoryFind ) throw new Error(`Category with ${ term } not found`);
+  
+      return categoryFind;
+    } catch (error) {
+      this.commonService.handleExceptions( 'Category not found, check ID', 'NF' );
+    }
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
@@ -75,17 +69,25 @@ export class CategoryService {
 
     if ( !categories ) this.commonService.handleExceptions( 'Business not found, check ID', 'NF' );
 
-    await this.categoryRepository.save( categories );
+    try {
 
-    return categories;
+      await this.categoryRepository.save( categories );
+      return categories;
 
+    } catch (error) {
+      this.commonService.handleExceptions( error.detail, 'BR' );
+    }
   }
 
   async remove( id: string ) {
 
-    this.findOne( id );
+    await this.findOne( id );
 
-    await this.categoryRepository.delete( id );
+    try {
+      await this.categoryRepository.delete( id );
+    } catch (error) {
+      this.commonService.handleExceptions( error.detail, 'BR' );
+    }
 
     return { message: 'Category deleted successfully' };
 

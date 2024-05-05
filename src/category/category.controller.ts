@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Auth } from 'src/auth/decorators';
+import { ValidRoles } from 'src/auth/interfaces';
 
 @Controller('category')
 export class CategoryController {
@@ -23,6 +25,7 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @Auth( ValidRoles.user )
   update(
     @Param( 'id', ParseUUIDPipe ) id: string, 
     @Body() updateCategoryDto: UpdateCategoryDto
@@ -31,6 +34,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @Auth( ValidRoles.user )
   remove( @Param( 'id', ParseUUIDPipe ) id: string ) {
     return this.categoryService.remove( id );
   }
