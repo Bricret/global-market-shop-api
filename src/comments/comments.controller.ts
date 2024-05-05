@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
 
 import { Auth, GetUser } from 'src/auth/decorators';
@@ -7,6 +8,8 @@ import { PaginationDto } from '../common/dtos/pagination.dto';
 import { User } from 'src/auth/entities/user.entity';
 import { ValidRoles } from 'src/auth/interfaces';
 
+
+@ApiTags('Comments')
 @Controller('comment')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
@@ -27,7 +30,7 @@ export class CommentsController {
     return this.commentsService.findAll( paginationDto );
   }
 
-  @Patch('update/ :id')
+  @Patch('update/:id')
   @Auth( ValidRoles.user )
   update(
     @Param('id') id: string, 

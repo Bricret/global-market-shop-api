@@ -1,13 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
+import { Auth, GetUser } from 'src/auth/decorators';
 import { BusinessService } from './business.service';
 import { CreateBusinessDto, UpdateBusinessDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { Auth, GetUser } from 'src/auth/decorators';
-import { ValidRoles } from 'src/auth/interfaces';
 import { User } from 'src/auth/entities/user.entity';
+import { ValidRoles } from 'src/auth/interfaces';
 
 
-
+@ApiTags('Business')
 @Controller('business')
 export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}

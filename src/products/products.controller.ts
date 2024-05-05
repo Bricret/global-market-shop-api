@@ -1,11 +1,15 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+
 import { Auth } from 'src/auth/decorators';
+import { CreateProductDto } from './dto/create-product.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { ProductsService } from './products.service';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { ValidRoles } from 'src/auth/interfaces';
 
+
+@ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
