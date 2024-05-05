@@ -109,41 +109,32 @@ export class BusinessService {
     };
   }
 
-  //TODO: Agregar validación de que el usuario que intenta actualizar es el dueño del negocio
   async update( id: string, updateBusinessDto: UpdateBusinessDto, user: User ) {
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { products, categories, ...rest } = updateBusinessDto;
 
-    const business = await this.businessRepository.preload( { id, ...rest } );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { categories, products, ...rest } = updateBusinessDto;
+    
+    const preChangeBusiness = await this.businessRepository.preload({ id, ...rest })
+    const business = await this.businessRepository.findOne({
+      where: { id },
+      relations: ['user', 'categories' ]
+    });
+
     if ( !business ) this.commonService.handleExceptions( 'Business not found, check ID', 'NF' );
 
     if ( business.user.id !== user.id ) this.commonService.handleExceptions( 'You are not allowed to update this business', 'BR' );
 
-    if (categories) {
-      const categoriesFindPromises = categories.map(async (category) => {
-         try {
 
-           const categoryFind = await this.categoryRepository.findOneBy({ id: category });
-           if (!categoryFind) throw new Error(`Category with ID ${category} not found`);
-
-           return categoryFind;
-         } catch (error) {
-           this.commonService.handleExceptions(error.message, 'BR');
-         }
-      });
-     
-      try {
-
-        const categoriesFind = await Promise.all(categoriesFindPromises);
-        business.categories = categoriesFind;
-
-      } catch (error) {
-        this.commonService.handleExceptions(error.message, 'BR');
-      }
+    if ( categories ) {
+      preChangeBusiness.categories = categories.map( category => ({ 
+        id: category,
+        name: business.categories.find( ({ id }) => id === category )?.name
+      }));
     }
-    await this.businessRepository.save(business);
-    return business;
+    await this.businessRepository.save( preChangeBusiness );
+
+    return preChangeBusiness;
   }
 
   async remove( id: string ) {
