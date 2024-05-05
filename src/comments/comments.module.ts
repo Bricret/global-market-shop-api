@@ -5,6 +5,7 @@ import { CommentsService } from './comments.service';
 import { CommentsController } from './comments.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { Comment } from './entities/comment.entity';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   controllers: [CommentsController],
@@ -13,7 +14,8 @@ import { Comment } from './entities/comment.entity';
     TypeOrmModule.forFeature([ 
       Comment,
     ]),
-    AuthModule
+    AuthModule,
+    CommonModule,
   ]
 })
 export class CommentsModule {}

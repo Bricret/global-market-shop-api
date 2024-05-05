@@ -1,34 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Auth, GetUser } from 'src/auth/decorators';
+import { ValidRoles } from 'src/auth/interfaces';
+import { User } from 'src/auth/entities/user.entity';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
-@Controller('comments')
+@Controller('comment')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  @Auth( ValidRoles.user)
+  create(
+    @Body() createCommentDto: CreateCommentDto,
+    @GetUser() user: User,
+  ) {
+    return this.commentsService.create( createCommentDto, user );
   }
 
   @Get()
-  findAll() {
-    return this.commentsService.findAll();
+  findAll( 
+    @Query() paginationDto: PaginationDto 
+  ) {
+    return this.commentsService.findAll( paginationDto );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
+  @Patch('update/ :id')
+  @Auth( ValidRoles.user )
+  update(
+    @Param('id') id: string, 
+    @Body() updateCommentDto: UpdateCommentDto,
+    @GetUser() user: User,
+  ) {
+    return this.commentsService.update( id, updateCommentDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
+  @Auth( ValidRoles.user )
+  remove( @Param('id', ParseUUIDPipe ) id: string) {
+    return this.commentsService.remove(id);
   }
 }
