@@ -8,6 +8,7 @@ import { CommonService } from 'src/common/common.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
 import { Category } from 'src/category/entities/category.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 
 @Injectable()
@@ -25,7 +26,7 @@ export class BusinessService {
 
   ) {}
 
-  async create(createBusinessDto: CreateBusinessDto) {
+  async create( createBusinessDto: CreateBusinessDto, user: User ) {
 
     const { products, categories, ...rest } = createBusinessDto;
 
@@ -35,11 +36,12 @@ export class BusinessService {
       ...rest,
       products: products?.map( product => ({ id: product }) ),
       categories: categories?.map( category => ({ id: category }) ),
+      user
     });
 
-    await this.businessRepository.save( business ); 
+    const addBusiness = await this.businessRepository.save( business ); 
 
-    return business;
+    return addBusiness;
 
   }
 
@@ -50,12 +52,12 @@ export class BusinessService {
     const business = await this.businessRepository.find({
       take: limit,
       skip: offset,
-      relations: { products: true }
+      relations: { products: true, categories: true }
     });
 
     return business.map( ({ products, ...rest }) => ({
       ...rest,
-      products: products.map( ( product ) => product.id )
+      products: products.map( ( product ) => product )
     }));
 
   }
@@ -64,8 +66,9 @@ export class BusinessService {
 
     const queryBuilder = this.businessRepository.createQueryBuilder('prod'); 
     const business = await queryBuilder
-      .where('UPPER(name) =:name or slug =:slug', {
-        name: term.toUpperCase(),
+      .where('UPPER(name) =:name or UPPER(slug) =:slug', 
+      {
+        name: term.toLowerCase(),
         slug: term.toLowerCase(),
       }).getOne();
 
@@ -75,35 +78,46 @@ export class BusinessService {
   }
 
   async findOneWhenExist( term: string ) {
+
     let business: Business;
 
     if ( isUUID(term) ) {
-      business = await this.businessRepository.findOneBy({ id: term });
+
+      business = await this.businessRepository.findOne({
+        where: { id: term },
+        relations: ['products', 'categories', 'user']
+      });
     } else {
+
     const queryBuilder = this.businessRepository.createQueryBuilder('busi'); 
     business = await queryBuilder
-      .where('UPPER(name) =:name or slug =:slug', {
+      .where('UPPER(busi.name) =:name or UPPER(busi.slug) =:slug', 
+      {
         name: term.toUpperCase(),
-        slug: term.toLowerCase(),
+        slug: term.toUpperCase(),
       })
       .leftJoinAndSelect('busi.products','busiProducts')
+      .leftJoinAndSelect('busi.categories','busiCategories')
+      .leftJoinAndSelect('busi.user','busiUser')
       .getOne()
     }
       if ( !business ) this.commonService.handleExceptions( `Business with ${ term } does not exist`, 'NF' );
 
     return {
       ...business,
-      products: business.products.map( ({ id }) => id )
+      products: business.products.map( ({ id }) => id ),
     };
   }
 
-  async update( id: string, updateBusinessDto: UpdateBusinessDto ) {
+  async update( id: string, updateBusinessDto: UpdateBusinessDto, user: User ) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { products, categories, ...rest } = updateBusinessDto;
 
     const business = await this.businessRepository.preload( { id, ...rest } );
     if ( !business ) this.commonService.handleExceptions( 'Business not found, check ID', 'NF' );
+
+    if ( business.user.id !== user.id ) this.commonService.handleExceptions( 'You are not allowed to update this business', 'BR' );
 
     if (categories) {
       const categoriesFindPromises = categories.map(async (category) => {

@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe
 import { BusinessService } from './business.service';
 import { CreateBusinessDto, UpdateBusinessDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { Auth } from 'src/auth/decorators';
+import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
+import { User } from 'src/auth/entities/user.entity';
 
 
 
@@ -13,8 +14,11 @@ export class BusinessController {
 
   @Post()
   @Auth( ValidRoles.admin )
-  create(@Body() createBusinessDto: CreateBusinessDto) {
-    return this.businessService.create(createBusinessDto);
+  create( 
+    @Body() createBusinessDto: CreateBusinessDto,
+    @GetUser() user: User,
+  ) {
+    return this.businessService.create( createBusinessDto, user );
   }
 
   @Get()
@@ -31,9 +35,10 @@ export class BusinessController {
   @Auth( ValidRoles.admin )
   update(
     @Param( 'id', ParseUUIDPipe ) id: string, 
-    @Body() updateBusinessDto: UpdateBusinessDto
+    @Body() updateBusinessDto: UpdateBusinessDto,
+    @GetUser() user: User,
   ) {
-    return this.businessService.update(id, updateBusinessDto);
+    return this.businessService.update( id, updateBusinessDto, user );
   }
 
   @Delete(':id')

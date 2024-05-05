@@ -62,7 +62,7 @@ export class Business {
     @ManyToOne(
         () => User,
         ( user ) => user.businesses,
-        { cascade: true, eager: true }
+        { onDelete: 'CASCADE' }
     )
     user: User;
 
@@ -73,7 +73,7 @@ export class Business {
         }
 
         this.slug = this.slug
-        .toLowerCase()
+        .toLowerCase().trim()
         .replaceAll(' ', '_')
         .replaceAll("'", "")
         
