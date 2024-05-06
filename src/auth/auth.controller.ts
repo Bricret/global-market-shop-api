@@ -6,7 +6,7 @@ import { CreateUserDto, LoginUserDto } from './dto';
 import { Auth, GetUser } from './decorators';
 import { User } from './entities/user.entity';
 import { ValidRoles } from './interfaces';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags('Auth')
@@ -30,6 +30,8 @@ export class AuthController {
 
   @Get('check-auth-status')
   @Auth( ValidRoles.user )
+  @ApiResponse({ status: 201, description: 'Product was created successfully.', type: User })
+  @ApiResponse({ status: 403, description: 'Token related' })
   checkAuthStatus(
     @GetUser() user: User
   ) {

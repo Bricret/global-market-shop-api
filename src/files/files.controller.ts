@@ -7,6 +7,8 @@ import { Response } from 'express';
 
 import { fileFilter, fileNamer } from './helpers';
 import { FilesService } from './files.service';
+import { Auth } from 'src/auth/decorators';
+import { ValidRoles } from 'src/auth/interfaces';
 
 
 @ApiTags('Files')
@@ -30,6 +32,7 @@ export class FilesController {
 
 
   @Post('product')
+  @Auth( ValidRoles.user )
   @UseInterceptors( FileInterceptor('file', {
     fileFilter: fileFilter,
     limits: { fileSize: 1024 * 1024 * 5 },
@@ -39,6 +42,8 @@ export class FilesController {
       
     })
   }) )
+
+  
   upLoadFile( 
     @UploadedFile() file: Express.Multer.File
   ) {
