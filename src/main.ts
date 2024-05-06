@@ -15,6 +15,8 @@ async function bootstrap() {
     })
    );
 
+   app.setGlobalPrefix('api')
+   
    const config = new DocumentBuilder()
     .setTitle('Global Market API')
     .setDescription('The Global Market API endPoints.')
@@ -23,8 +25,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.setGlobalPrefix('api')
-
+  
   await app.listen(process.env.PORT || 3000);
   logger.log(`Application listening on port ${process.env.PORT}`);
 }

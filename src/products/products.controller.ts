@@ -11,7 +11,7 @@ import { Product } from './entities';
 
 
 @ApiTags('Products')
-@Controller('products')
+@Controller('Products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
