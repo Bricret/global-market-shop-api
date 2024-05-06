@@ -43,6 +43,13 @@ $ pnpm run start:prod
 ```
 
 
+## Ruta para leer documentacion de endpoints.
+
+```bash
+#Esto puede variar segun tu Host.
+$ http://localhost:3000/api
+```
+
 ## Licencia
 
 Nest is [MIT licensed](LICENSE).
