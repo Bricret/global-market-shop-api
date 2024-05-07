@@ -9,6 +9,7 @@ import { BusinessModule } from './business/business.module';
 import { CategoryModule } from './category/category.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentsModule } from './comments/comments.module';
+import { MessagesWsModule } from './messages-ws/messages-ws.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CommentsModule } from './comments/comments.module';
     CategoryModule,
     AuthModule,
     CommentsModule,
+    MessagesWsModule,
   ],
   controllers: [],
   providers: [],
